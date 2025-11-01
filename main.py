@@ -47,8 +47,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Initialize services
-item_service = ItemService()
+# Initialize services lazily (delay model loading until first request)
+# This prevents slow model download from blocking app startup
+item_service = None
+
+def get_item_service():
+    """Get or create ItemService instance (lazy initialization)"""
+    global item_service
+    if item_service is None:
+        item_service = ItemService()
+    return item_service
 
 
 # Pydantic models
@@ -98,7 +106,8 @@ async def root():
 async def health_check():
     """Health check endpoint"""
     try:
-        stats = item_service.get_stats()
+        service = get_item_service()
+        stats = service.get_stats()
         return {
             "status": "healthy",
             "service": "fashion-clip-api",
@@ -156,7 +165,8 @@ async def upload_item(
             )
         
         # Process item
-        result = await item_service.process_uploaded_item(
+        service = get_item_service()
+        result = await service.process_uploaded_item(
             image_data=image_data,
             item_id=item_id,
             user_id=user_id,
@@ -189,7 +199,8 @@ async def get_item_recommendations(
     Note: If Supabase is not configured, image_url query parameter must be provided
     """
     try:
-        recommendations = await item_service.get_recommendations(
+        service = get_item_service()
+        recommendations = await service.get_recommendations(
             item_id=request.item_id,
             user_id=request.user_id,
             k=request.k,
@@ -222,7 +233,8 @@ async def get_outfit_recommendations(request: OutfitRecommendationRequest):
     Returns recommendations organized by category
     """
     try:
-        recommendations = await item_service.get_outfit_recommendations(
+        service = get_item_service()
+        recommendations = await service.get_outfit_recommendations(
             base_items=request.base_items,
             user_id=request.user_id,
             k_per_category=request.k_per_category
@@ -249,7 +261,8 @@ async def remove_item(item_id: str):
     Remove item from FAISS index
     """
     try:
-        success = await item_service.remove_item(item_id)
+        service = get_item_service()
+        success = await service.remove_item(item_id)
         
         if success:
             return {"success": True, "message": f"Item {item_id} removed from index"}
@@ -267,7 +280,8 @@ async def remove_item(item_id: str):
 async def get_stats():
     """Get service statistics"""
     try:
-        stats = item_service.get_stats()
+        service = get_item_service()
+        stats = service.get_stats()
         return {
             "success": True,
             "stats": stats
