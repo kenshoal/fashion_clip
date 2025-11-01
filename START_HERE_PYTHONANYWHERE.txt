@@ -1,0 +1,37 @@
+════════════════════════════════════════════════════════════
+  PYTHONANYWHERE - 100% FREE, NO BILLING, NO PAYMENT!
+════════════════════════════════════════════════════════════
+
+1. Sign up: https://www.pythonanywhere.com
+   Click "Beginner" (FREE plan - no credit card!)
+
+2. Open Bash console:
+   - Click "Consoles" tab
+   - Click "Bash" 
+
+3. Clone your repo:
+   git clone https://github.com/kenshoal/fashion_clip.git
+   cd fashion_clip
+
+4. Install dependencies:
+   pip3.10 install --user -r requirements.txt
+
+5. Create Web App:
+   - Go to "Web" tab
+   - Click "Add a new web app"
+   - Choose "Manual configuration"
+   - Select Python 3.10
+   - Click "Next"
+
+6. Configure:
+   - Working directory: /home/YOUR_USERNAME/fashion_clip
+   - Edit WSGI file, replace with content from .pythonanywhere_wsgi.py
+
+7. Reload:
+   - Click green "Reload" button
+
+YOUR API: https://YOUR_USERNAME.pythonanywhere.com
+
+════════════════════════════════════════════════════════════
+100% FREE - NO BILLING - NO PAYMENT METHOD NEEDED!
+

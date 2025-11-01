@@ -1,0 +1,42 @@
+PYTHONANYWHERE - 100% FREE, NO BILLING!
+
+Step 1: Sign up
+https://www.pythonanywhere.com
+Click "Beginner" (free account)
+
+Step 2: Upload files
+- Go to Files tab
+- Upload all your files OR connect GitHub repo
+
+Step 3: Open Bash console
+- Click "Consoles" → "Bash"
+- Run: pip3.10 install --user -r requirements.txt
+
+Step 4: Create web app
+- Go to "Web" tab
+- Click "Add a new web app"
+- Choose "Manual configuration"
+- Python 3.10
+- Click "Next"
+
+Step 5: Configure WSGI file
+Replace with:
+import sys
+path = '/home/YOUR_USERNAME/fashion_clip'
+if path not in sys.path:
+    sys.path.insert(0, path)
+
+from main import app
+
+application = app
+
+Step 6: Set working directory
+In Web tab → Working directory:
+/home/YOUR_USERNAME/fashion_clip
+
+Step 7: Reload web app
+Click green "Reload" button
+
+DONE! Your API is live at:
+https://YOUR_USERNAME.pythonanywhere.com
+

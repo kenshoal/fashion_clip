@@ -1,0 +1,32 @@
+PYTHONANYWHERE - 100% FREE, NO PAYMENT METHOD NEEDED!
+
+1. Sign up: https://www.pythonanywhere.com
+   Click "Beginner" plan (FREE)
+
+2. Open Bash console (Consoles → Bash)
+
+3. Clone your repo:
+   git clone https://github.com/kenshoal/fashion_clip.git
+
+4. Install dependencies:
+   cd fashion_clip
+   pip3.10 install --user -r requirements.txt
+
+5. Create Web App (Web tab → Add new web app):
+   - Manual configuration
+   - Python 3.10
+   - Working directory: /home/YOUR_USERNAME/fashion_clip
+
+6. Edit WSGI file:
+   Replace content with:
+   import sys
+   path = '/home/YOUR_USERNAME/fashion_clip'
+   if path not in sys.path:
+       sys.path.insert(0, path)
+   from main import app
+   application = app
+
+7. Reload web app (green Reload button)
+
+YOUR API: https://YOUR_USERNAME.pythonanywhere.com
+

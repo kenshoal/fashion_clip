@@ -22,11 +22,11 @@ COPY . .
 # Create necessary directories
 RUN mkdir -p data uploads logs
 
-# Expose port (Railway provides PORT env var dynamically)
-# Use any port - Railway will map it automatically
+# Expose port
 EXPOSE 7860
 
 # Run the application
-# Railway provides PORT env var - use it or default to 7860
+# For PythonAnywhere, use uvicorn manually in console
+# For other platforms, PORT env var will be provided
 CMD ["sh", "-c", "uvicorn app:app --host 0.0.0.0 --port ${PORT:-7860}"]
 
