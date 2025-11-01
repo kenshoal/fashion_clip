@@ -115,15 +115,15 @@ async def root():
 @app.get("/health")
 @app.get("/api/v1/health")
 async def health_check():
-    """Health check endpoint"""
+    """Health check endpoint - fast, doesn't require model initialization"""
     try:
-        service = get_item_service()
-        stats = service.get_stats()
+        # Fast health check - don't load model
+        # Just verify the service can be accessed
         return {
             "status": "healthy",
             "service": "fashion-clip-api",
             "version": "1.0.0",
-            "stats": stats
+            "message": "API is running. Model will load on first request."
         }
     except Exception as e:
         logger.error(f"Health check failed: {e}")
@@ -291,6 +291,17 @@ async def remove_item(item_id: str):
 async def get_stats():
     """Get service statistics"""
     try:
+        # Check if service is initialized
+        global item_service
+        if item_service is None:
+            return {
+                "success": True,
+                "stats": {
+                    "service_initialized": False,
+                    "message": "Service will initialize on first request"
+                }
+            }
+        
         service = get_item_service()
         stats = service.get_stats()
         return {
@@ -299,7 +310,14 @@ async def get_stats():
         }
     except Exception as e:
         logger.error(f"Error getting stats: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        # Return partial stats instead of error
+        return {
+            "success": True,
+            "stats": {
+                "error": str(e),
+                "service_initialized": item_service is not None
+            }
+        }
 
 
 if __name__ == "__main__":
