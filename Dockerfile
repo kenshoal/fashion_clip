@@ -28,5 +28,6 @@ EXPOSE 7860
 
 # Run the application
 # HF Spaces provides PORT env var, default to 7860 if not set
-CMD ["sh", "-c", "uvicorn app:app --host 0.0.0.0 --port ${PORT:-7860} --workers 1"]
+# Use --proxy-headers for proper reverse proxy handling
+CMD ["sh", "-c", "uvicorn app:app --host 0.0.0.0 --port ${PORT:-7860} --proxy-headers --workers 1"]
 

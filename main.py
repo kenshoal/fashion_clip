@@ -25,10 +25,12 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Initialize FastAPI app
+# root_path="" allows HF Spaces reverse proxy to work correctly
 app = FastAPI(
     title="FashionCLIP Outfit Recommendation API",
     description="AI-powered outfit recommendations using FashionCLIP embeddings",
-    version="1.0.0"
+    version="1.0.0",
+    root_path=""  # Empty root_path for HF Spaces Docker deployment
 )
 
 # CORS middleware
