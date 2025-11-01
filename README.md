@@ -72,4 +72,3 @@ Set these environment variables in Space Settings → Secrets (optional):
 ## Documentation
 
 See `backend/fashion-clip-api/HUGGINGFACE_SPACES.md` for detailed deployment instructions.
-

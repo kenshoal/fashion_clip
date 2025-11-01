@@ -12,4 +12,3 @@ services:
         value: 0.0.0.0
     healthCheckPath: /health
     autoDeploy: true
-
