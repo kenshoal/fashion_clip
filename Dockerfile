@@ -27,6 +27,6 @@ RUN mkdir -p data uploads logs
 EXPOSE 7860
 
 # Run the application
-# HF Spaces Docker - use proxy-headers for reverse proxy support
-CMD ["sh", "-c", "uvicorn app:app --host 0.0.0.0 --port ${PORT:-7860} --proxy-headers --workers 1"]
+# HF Spaces Docker - ensure correct host binding and proxy support
+CMD uvicorn app:app --host 0.0.0.0 --port ${PORT:-7860} --proxy-headers
 
