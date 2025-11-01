@@ -32,9 +32,14 @@ app = FastAPI(
 )
 
 # CORS middleware
+# For HF Spaces, allow all origins - needed for the Space interface
+cors_origins = settings.cors_origins
+# If cors_origins is empty or only has localhost, allow all for HF Spaces
+if not cors_origins or cors_origins == ["http://localhost:5173"]:
+    cors_origins = ["*"]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins,
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -66,6 +71,18 @@ class ItemUploadRequest(BaseModel):
     image_url: Optional[str] = None
     name: Optional[str] = None
 
+
+# Root endpoint for HF Spaces
+@app.get("/")
+async def root():
+    """Root endpoint - redirects to API docs"""
+    return {
+        "service": "FashionCLIP Outfit Recommendation API",
+        "version": "1.0.0",
+        "status": "running",
+        "docs": "/docs",
+        "health": "/api/v1/health"
+    }
 
 # Health check
 @app.get("/api/v1/health")
