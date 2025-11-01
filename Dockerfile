@@ -26,8 +26,7 @@ RUN mkdir -p data uploads logs
 # Expose the port that HF Spaces expects
 EXPOSE 7860
 
-# Run the application
-# HF Spaces provides PORT env var, default to 7860 if not set
-# Use --proxy-headers for proper reverse proxy handling
-CMD ["sh", "-c", "uvicorn app:app --host 0.0.0.0 --port ${PORT:-7860} --proxy-headers --workers 1"]
+# Run the application using startup script
+# This ensures proper handling of PORT env var and proxy headers
+CMD ["./start.sh"]
 
