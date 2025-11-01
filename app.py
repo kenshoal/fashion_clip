@@ -1,26 +1,28 @@
 """
-Hugging Face Spaces entry point
+Hugging Face Spaces entry point - Minimal version for debugging
 """
-import sys
-import logging
+from fastapi import FastAPI
 
-# Setup basic logging first
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+# Create minimal app first to test routing
+app = FastAPI(title="FashionCLIP API")
 
+@app.get("/")
+async def root():
+    return {"status": "ok", "message": "API is running"}
+
+@app.get("/health")
+async def health():
+    return {"status": "healthy"}
+
+# Try to import full app
 try:
-    from main import app
-    logger.info("✅ Successfully imported app from main")
+    from main import app as main_app
+    # If import succeeds, replace with full app
+    app = main_app
 except Exception as e:
-    logger.error(f"❌ Failed to import app: {e}", exc_info=True)
-    # Create minimal app so Space doesn't crash
-    from fastapi import FastAPI
-    app = FastAPI(title="Error: Failed to load FashionCLIP API")
-    
-    @app.get("/")
-    async def error():
-        return {"error": f"Failed to load application: {str(e)}"}
+    # Keep minimal app but add error endpoint
+    @app.get("/error")
+    async def error_info():
+        return {"error": str(e), "type": type(e).__name__}
 
-# HF Spaces Docker looks for 'app' variable in app.py
 __all__ = ['app']
-
