@@ -1,0 +1,29 @@
+DEPLOY TO RENDER (100% FREE):
+
+1. Sign up: https://render.com (use GitHub login)
+
+2. Go to: https://dashboard.render.com
+
+3. Click "New +" → "Web Service"
+
+4. Connect your GitHub repo: kenshoal/fashion_clip
+
+5. Settings:
+   - Name: fashion-clip-api
+   - Environment: Docker
+   - Dockerfile Path: ./Dockerfile
+   - Plan: Free
+   - Region: Oregon (closest to you)
+   
+6. Environment Variables (optional):
+   - PORT=10000 (auto-set by Render, but can specify)
+
+7. Click "Create Web Service"
+
+8. Wait 5-10 minutes for build
+
+Your API: https://fashion-clip-api.onrender.com
+
+Note: Free tier spins down after 15min inactivity.
+      First request may take 30-60s to wake up.
+

@@ -22,11 +22,10 @@ COPY . .
 # Create necessary directories
 RUN mkdir -p data uploads logs
 
-# Hugging Face Spaces uses dynamic PORT (usually 7860)
-# Expose the port that HF Spaces expects
-EXPOSE 7860
+# Expose port (Render uses 10000, HF Spaces uses 7860)
+EXPOSE 10000
 
 # Run the application
-# HF Spaces Docker - shell form needed for PORT env var
-CMD ["sh", "-c", "uvicorn app:app --host 0.0.0.0 --port ${PORT:-7860} --proxy-headers"]
+# PORT env var is provided by platform (Render=10000, HF Spaces=7860)
+CMD ["sh", "-c", "uvicorn app:app --host 0.0.0.0 --port ${PORT:-10000} --proxy-headers"]
 
