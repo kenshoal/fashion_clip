@@ -36,5 +36,10 @@ Thumbs.db
 
 # Model cache
 .cache/
-models/
+# Don't ignore our Python model code - only ignore cached model files
+*.safetensors
+*.bin
+!**/faiss_index.bin
+models/**/*.pt
+models/**/*.pth
 
