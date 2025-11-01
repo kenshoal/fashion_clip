@@ -22,11 +22,12 @@ COPY . .
 # Create necessary directories
 RUN mkdir -p data uploads logs
 
-# Expose port - Render dynamically assigns PORT
-# Must use PORT env var, no default (Render requires this)
-EXPOSE 10000
+# Expose port - Render uses dynamic PORT, HF Spaces uses 7860
+# Using dynamic PORT in CMD handles both
+EXPOSE 7860
 
 # Run the application
-# Render provides PORT env var automatically - must use it
-CMD ["sh", "-c", "uvicorn app:app --host 0.0.0.0 --port $PORT --proxy-headers"]
+# Render provides PORT automatically, HF Spaces uses 7860
+# Must use PORT if set, otherwise default to 7860 for HF Spaces
+CMD ["sh", "-c", "uvicorn app:app --host 0.0.0.0 --port ${PORT:-7860} --proxy-headers"]
 
