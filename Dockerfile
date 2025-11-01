@@ -22,10 +22,11 @@ COPY . .
 # Create necessary directories
 RUN mkdir -p data uploads logs
 
-# Expose port (Render provides PORT env var, must use $PORT)
-EXPOSE 10000
+# Expose port (Railway provides PORT env var dynamically)
+# Use any port - Railway will map it automatically
+EXPOSE 7860
 
 # Run the application
-# Render requires binding to $PORT env var (provided automatically)
-CMD uvicorn app:app --host 0.0.0.0 --port $PORT
+# Railway provides PORT env var - use it or default to 7860
+CMD ["sh", "-c", "uvicorn app:app --host 0.0.0.0 --port ${PORT:-7860}"]
 
