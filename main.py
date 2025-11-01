@@ -14,19 +14,21 @@ from pydantic import BaseModel
 from config import settings
 from services.item_service import ItemService
 
-# Configure logging - ensure logs directory exists
+# Configure logging - with safe error handling
 try:
-    os.makedirs(os.path.dirname(settings.log_file), exist_ok=True)
-except (OSError, TypeError):
-    pass  # If log_file is relative or directory doesn't need creation
+    log_dir = os.path.dirname(settings.log_file) if hasattr(settings, 'log_file') else None
+    if log_dir:
+        os.makedirs(log_dir, exist_ok=True)
+    # Try to create file handler
+    handlers = [logging.FileHandler(settings.log_file), logging.StreamHandler()]
+except (OSError, TypeError, AttributeError):
+    # Fallback to stream only if file handler fails
+    handlers = [logging.StreamHandler()]
 
 logging.basicConfig(
-    level=getattr(logging, settings.log_level),
+    level=getattr(logging, getattr(settings, 'log_level', 'INFO'), logging.INFO),
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler(settings.log_file),
-        logging.StreamHandler()
-    ]
+    handlers=handlers
 )
 
 logger = logging.getLogger(__name__)
