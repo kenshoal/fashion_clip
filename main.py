@@ -75,16 +75,23 @@ class ItemUploadRequest(BaseModel):
 # Root endpoint for HF Spaces
 @app.get("/")
 async def root():
-    """Root endpoint - redirects to API docs"""
+    """Root endpoint - shows API information"""
     return {
         "service": "FashionCLIP Outfit Recommendation API",
         "version": "1.0.0",
         "status": "running",
-        "docs": "/docs",
-        "health": "/api/v1/health"
+        "endpoints": {
+            "health": ["/health", "/api/v1/health"],
+            "stats": ["/stats", "/api/v1/stats"],
+            "upload": ["/items/upload", "/api/v1/items/upload"],
+            "recommendations": ["/items/recommendations", "/api/v1/items/recommendations"],
+            "outfits": ["/outfits/recommend", "/api/v1/outfits/recommend"],
+            "docs": "/docs"
+        }
     }
 
-# Health check
+# Health check - with both paths for HF Spaces compatibility
+@app.get("/health")
 @app.get("/api/v1/health")
 async def health_check():
     """Health check endpoint"""
@@ -101,7 +108,8 @@ async def health_check():
         raise HTTPException(status_code=503, detail="Service unhealthy")
 
 
-# Upload and process item
+# Upload and process item - with both paths for HF Spaces compatibility
+@app.post("/items/upload")
 @app.post("/api/v1/items/upload")
 async def upload_item(
     file: UploadFile = File(...),
@@ -164,7 +172,8 @@ async def upload_item(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# Get recommendations for an item
+# Get recommendations for an item - with both paths for HF Spaces compatibility
+@app.post("/items/recommendations")
 @app.post("/api/v1/items/recommendations")
 async def get_item_recommendations(
     request: RecommendationRequest,
@@ -201,7 +210,8 @@ async def get_item_recommendations(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# Get outfit recommendations
+# Get outfit recommendations - with both paths for HF Spaces compatibility
+@app.post("/outfits/recommend")
 @app.post("/api/v1/outfits/recommend")
 async def get_outfit_recommendations(request: OutfitRecommendationRequest):
     """
@@ -229,7 +239,8 @@ async def get_outfit_recommendations(request: OutfitRecommendationRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# Remove item from index
+# Remove item from index - with both paths for HF Spaces compatibility
+@app.delete("/items/{item_id}")
 @app.delete("/api/v1/items/{item_id}")
 async def remove_item(item_id: str):
     """
@@ -248,7 +259,8 @@ async def remove_item(item_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# Get stats
+# Get stats - with both paths for HF Spaces compatibility
+@app.get("/stats")
 @app.get("/api/v1/stats")
 async def get_stats():
     """Get service statistics"""
