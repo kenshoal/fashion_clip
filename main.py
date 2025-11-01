@@ -1,18 +1,25 @@
 """
 FastAPI application for FashionCLIP outfit recommendations
 """
+import os
+import logging
+from pathlib import Path
+from typing import List, Optional
+
 from fastapi import FastAPI, UploadFile, File, HTTPException, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from typing import List, Optional
-import logging
-from pathlib import Path
 
 from config import settings
 from services.item_service import ItemService
 
-# Configure logging
+# Configure logging - ensure logs directory exists
+try:
+    os.makedirs(os.path.dirname(settings.log_file), exist_ok=True)
+except (OSError, TypeError):
+    pass  # If log_file is relative or directory doesn't need creation
+
 logging.basicConfig(
     level=getattr(logging, settings.log_level),
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
