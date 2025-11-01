@@ -8,8 +8,8 @@ import os
 
 class Settings(BaseSettings):
     # Server
-    # Hugging Face Spaces uses dynamic ports via PORT env var
-    port: int = 8000  # Default for local dev, overridden by PORT env var
+    # Render/Platforms provide PORT env var - must use it
+    port: int = int(os.getenv("PORT", "8000"))  # Use PORT from environment
     host: str = "0.0.0.0"
     debug: bool = False
     
