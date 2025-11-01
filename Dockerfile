@@ -26,7 +26,7 @@ RUN mkdir -p data uploads logs
 # Expose the port that HF Spaces expects
 EXPOSE 7860
 
-# Run the application using startup script
-# This ensures proper handling of PORT env var and proxy headers
-CMD ["./start.sh"]
+# Run the application
+# HF Spaces Docker requires uvicorn app:app directly
+CMD uvicorn app:app --host 0.0.0.0 --port ${PORT:-7860} --workers 1
 
