@@ -27,6 +27,6 @@ RUN mkdir -p data uploads logs
 EXPOSE 7860
 
 # Run the application
-# HF Spaces Docker requires uvicorn app:app directly
-CMD uvicorn app:app --host 0.0.0.0 --port ${PORT:-7860} --workers 1
+# HF Spaces Docker - use shell form for env var substitution
+CMD ["sh", "-c", "uvicorn app:app --host 0.0.0.0 --port ${PORT:-7860} --workers 1"]
 
