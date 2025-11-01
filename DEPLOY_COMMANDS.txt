@@ -1,5 +1,0 @@
-cd /Users/ken/Documents/GitHub/fashion_clip
-railway login
-railway init
-railway up
-

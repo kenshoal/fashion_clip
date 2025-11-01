@@ -1,4 +1,0 @@
-flyctl auth login
-flyctl launch --no-deploy
-flyctl deploy
-

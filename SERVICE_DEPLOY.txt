@@ -1,6 +1,0 @@
-cd /Users/ken/Documents/GitHub/fashion_clip
-export PATH="$HOME/.fly/bin:$PATH"
-flyctl auth login
-flyctl launch --no-deploy
-flyctl deploy
-

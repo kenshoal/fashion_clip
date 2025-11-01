@@ -1,9 +1,0 @@
-Google Cloud Run - 100% FREE (no credit card for free tier!)
-
-Install:
-curl https://sdk.cloud.google.com | bash
-
-Deploy:
-gcloud auth login
-gcloud run deploy fashion-clip-api --source . --platform managed --region us-central1 --allow-unauthenticated --memory 2Gi
-
