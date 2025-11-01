@@ -6,6 +6,7 @@ colorTo: purple
 sdk: docker
 pinned: false
 license: mit
+app_port: 7860
 ---
 
 # FashionCLIP Outfit Recommendation API
@@ -26,11 +27,13 @@ The application files are in `backend/fashion-clip-api/`. See the [deployment gu
 ## API Endpoints
 
 ### Health Check
+
 ```
 GET /api/v1/health
 ```
 
 ### Upload Item
+
 ```
 POST /api/v1/items/upload
 Content-Type: multipart/form-data
@@ -43,6 +46,7 @@ Fields:
 ```
 
 ### Get Recommendations
+
 ```
 POST /api/v1/items/recommendations
 Content-Type: application/json
