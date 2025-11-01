@@ -149,11 +149,16 @@ async def upload_item(
 
 # Get recommendations for an item
 @app.post("/api/v1/items/recommendations")
-async def get_item_recommendations(request: RecommendationRequest):
+async def get_item_recommendations(
+    request: RecommendationRequest,
+    image_url: Optional[str] = None
+):
     """
     Get recommendations for a specific item
     
     Returns items from user's wardrobe that match stylistically
+    
+    Note: If Supabase is not configured, image_url query parameter must be provided
     """
     try:
         recommendations = await item_service.get_recommendations(
@@ -161,7 +166,8 @@ async def get_item_recommendations(request: RecommendationRequest):
             user_id=request.user_id,
             k=request.k,
             target_categories=request.target_categories,
-            min_similarity=request.min_similarity
+            min_similarity=request.min_similarity,
+            image_url=image_url
         )
         
         return {

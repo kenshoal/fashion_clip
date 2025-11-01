@@ -2,13 +2,22 @@
 Service for managing clothing items and embeddings
 """
 import asyncio
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, TYPE_CHECKING
 from pathlib import Path
 import logging
 from PIL import Image
 import io
 
-from supabase import create_client, Client
+if TYPE_CHECKING:
+    from supabase import Client
+
+try:
+    from supabase import create_client, Client
+    SUPABASE_AVAILABLE = True
+except ImportError:
+    SUPABASE_AVAILABLE = False
+    Client = None  # Will be Optional[Client] in type hints
+
 from models.embedding_model import FashionCLIPEmbedder
 from models.faiss_manager import FAISSManager
 from config import settings
@@ -22,10 +31,22 @@ class ItemService:
     """
     
     def __init__(self):
-        self.supabase: Client = create_client(
-            settings.supabase_url,
-            settings.supabase_service_key
-        )
+        # Initialize Supabase only if credentials are provided and library is available
+        self.supabase: Optional[Client] = None
+        if not SUPABASE_AVAILABLE:
+            logger.warning("Supabase library not installed - running in standalone mode")
+        elif settings.supabase_url and settings.supabase_service_key:
+            try:
+                self.supabase = create_client(
+                    settings.supabase_url,
+                    settings.supabase_service_key
+                )
+                logger.info("Supabase client initialized")
+            except Exception as e:
+                logger.warning(f"Failed to initialize Supabase: {e}")
+        else:
+            logger.warning("Supabase credentials not provided - running in standalone mode")
+        
         self.embedder = FashionCLIPEmbedder(
             model_name=settings.fashion_clip_model,
             device=settings.device
@@ -104,7 +125,8 @@ class ItemService:
         user_id: str,
         k: int = 10,
         target_categories: Optional[List[str]] = None,
-        min_similarity: float = 0.5
+        min_similarity: float = 0.5,
+        image_url: Optional[str] = None
     ) -> List[Dict]:
         """
         Get recommendations for an item
@@ -115,19 +137,25 @@ class ItemService:
             k: Number of recommendations
             target_categories: Categories to recommend (e.g., ['bottom', 'shoes'])
             min_similarity: Minimum similarity score
+            image_url: Optional image URL (if Supabase not available)
             
         Returns:
             List of recommended items with similarity scores
         """
         try:
-            # Get item from database
-            item_response = self.supabase.table('clothes').select('*').eq('id', item_id).execute()
-            
-            if not item_response.data:
-                raise ValueError(f"Item {item_id} not found")
-            
-            item = item_response.data[0]
-            image_url = item.get('image_url')
+            # If Supabase is available, get item from database
+            if self.supabase:
+                item_response = self.supabase.table('clothes').select('*').eq('id', item_id).execute()
+                
+                if not item_response.data:
+                    raise ValueError(f"Item {item_id} not found")
+                
+                item = item_response.data[0]
+                image_url = item.get('image_url') or image_url
+            else:
+                # In standalone mode, image_url must be provided
+                if not image_url:
+                    raise ValueError(f"Item {item_id} has no image URL and Supabase is not configured")
             
             if not image_url:
                 raise ValueError(f"Item {item_id} has no image URL")
@@ -176,12 +204,17 @@ class ItemService:
             Dict mapping category to list of recommended items
         """
         try:
-            # Get all base items
-            items_response = self.supabase.table('clothes').select('*').in_('id', base_items).execute()
-            items = items_response.data
-            
-            if not items:
-                raise ValueError("No base items found")
+            # Get all base items (if Supabase is available)
+            if self.supabase:
+                items_response = self.supabase.table('clothes').select('*').in_('id', base_items).execute()
+                items = items_response.data
+                
+                if not items:
+                    raise ValueError("No base items found")
+            else:
+                # In standalone mode, we need image URLs to be provided via metadata
+                # For now, raise error - this endpoint requires Supabase
+                raise ValueError("Outfit recommendations require Supabase configuration")
             
             # Get embeddings for base items
             embeddings = []
@@ -245,6 +278,9 @@ class ItemService:
     
     async def _store_embedding_backup(self, item_id: str, embedding):
         """Store embedding in Supabase as backup (optional)"""
+        if not self.supabase:
+            return  # Skip if Supabase not configured
+        
         try:
             # Store as JSON array in a text column or use pgvector extension
             # This is optional - FAISS is the primary store
@@ -263,9 +299,11 @@ class ItemService:
     
     def get_stats(self) -> Dict:
         """Get service statistics"""
-        return {
+        stats = {
             'faiss_stats': self.faiss_manager.get_stats(),
             'model': settings.fashion_clip_model,
-            'device': settings.device
+            'device': settings.device,
+            'supabase_configured': self.supabase is not None
         }
+        return stats
 

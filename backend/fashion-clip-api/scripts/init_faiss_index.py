@@ -8,7 +8,13 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from supabase import create_client
+try:
+    from supabase import create_client
+    SUPABASE_AVAILABLE = True
+except ImportError:
+    SUPABASE_AVAILABLE = False
+    print("Warning: Supabase library not installed. This script requires Supabase.")
+
 from services.item_service import ItemService
 from config import settings
 import httpx
@@ -22,6 +28,14 @@ logger = logging.getLogger(__name__)
 
 async def migrate_existing_items():
     """Migrate existing items from Supabase to FAISS index"""
+    
+    if not SUPABASE_AVAILABLE:
+        logger.error("Supabase library not installed. Cannot run migration.")
+        return
+    
+    if not settings.supabase_url or not settings.supabase_service_key:
+        logger.error("Supabase credentials not configured. Cannot run migration.")
+        return
     
     supabase = create_client(settings.supabase_url, settings.supabase_service_key)
     item_service = ItemService()

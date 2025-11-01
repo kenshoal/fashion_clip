@@ -20,9 +20,10 @@ COPY . .
 # Create necessary directories
 RUN mkdir -p data uploads logs
 
-# Expose port
-EXPOSE 8000
+# Expose port (HF Spaces uses dynamic ports, but we'll use 7860 as default)
+EXPOSE 7860
 
 # Run the application
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# HF Spaces sets PORT env var, but we default to 7860
+CMD ["sh", "-c", "uvicorn app:app --host 0.0.0.0 --port ${PORT:-7860}"]
 

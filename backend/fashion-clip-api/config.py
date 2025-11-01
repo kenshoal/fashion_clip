@@ -8,14 +8,15 @@ import os
 
 class Settings(BaseSettings):
     # Server
-    port: int = 8000
+    # Hugging Face Spaces uses dynamic ports via PORT env var
+    port: int = 8000  # Default for local dev, overridden by PORT env var
     host: str = "0.0.0.0"
     debug: bool = False
     
-    # Supabase
-    supabase_url: str
-    supabase_key: str
-    supabase_service_key: str
+    # Supabase (optional for demo/standalone mode)
+    supabase_url: str = ""
+    supabase_key: str = ""
+    supabase_service_key: str = ""
     
     # FAISS
     faiss_index_path: str = "./data/faiss_index.bin"
@@ -42,6 +43,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         case_sensitive = False
+        # PORT env var will automatically override port field
 
 
 # Create directories
