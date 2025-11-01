@@ -4,8 +4,5 @@ services:
     env: docker
     dockerfilePath: ./Dockerfile
     plan: free
-    envVars:
-      - key: PORT
-        value: 10000
     healthCheckPath: /health
 
