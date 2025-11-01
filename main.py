@@ -34,12 +34,14 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Initialize FastAPI app for Hugging Face Spaces
+# Note: HF Spaces Docker reverse proxy requires root_path to be empty
 app = FastAPI(
     title="FashionCLIP Outfit Recommendation API",
     description="AI-powered outfit recommendations using FashionCLIP embeddings",
     version="1.0.0",
     docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url="/redoc",
+    root_path=""  # Empty for HF Spaces Docker
 )
 
 # CORS middleware
